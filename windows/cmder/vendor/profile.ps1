@@ -26,6 +26,9 @@ function checkGit($Path) {
     }
 }
 
+# Remove "iex" alias (inteferes with Elixir's interactive prompt).
+Remove-Item alias:iex -Force
+
 # Set up a Cmder prompt, adding the git prompt parts inside git repos
 function global:prompt {
     $realLASTEXITCODE = $LASTEXITCODE
@@ -39,7 +42,7 @@ function global:prompt {
     return " "
 }
 
-# Load special features come from posh-git
+# Load special features from posh-git
 if ($gitStatus) {
     Enable-GitColors
     Start-SshAgent -Quiet
