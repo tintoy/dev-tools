@@ -17,7 +17,7 @@ Function Get-GitIgnore {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true, Position=0)]
-        [string[]] $IgnoreTypes,
+        [string[]] $IgnoreTypes
     )
 
     $params = $IgnoreTypes -join ","

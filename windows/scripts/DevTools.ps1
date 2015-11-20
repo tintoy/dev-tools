@@ -58,6 +58,7 @@ Function Get-32BitSoftwareRegistryValue([string] $RelativePath, [string] $Name)
 
 Function Convert-PathStringToPathSet([string] $PathString) {
     # Path order is important (but case is not).
+    # AF: Oh really? Then why are you using a SortedSet? They don't retain insertion order, you know. FIXME
     $PathSet = New-Object 'System.Collections.Generic.SortedSet`1[[System.String,mscorlib]]' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
 
     If ($PathString) {
