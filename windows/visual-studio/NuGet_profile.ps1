@@ -254,7 +254,7 @@ Function Get-PackagesForPortal()
 {
 	Get-Package Aperture |
 		Where {
-			$_.Id -Like 'Aperture.Portal*' -Or $_.Id -Like 'Aperture.Services*'
+			$_.Id -Like 'Aperture.Portal*' -Or $_.Id -Like 'Aperture.Services*' -Or $_.Id -Eq 'Aperture.Api.TestCommon'
 		} | Sort Id
 }
 
