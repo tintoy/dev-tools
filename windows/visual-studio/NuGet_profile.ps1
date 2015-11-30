@@ -1,8 +1,4 @@
 <#
-	Feel free to define any functions or variables you find useful. If it works in Powershell it works here.
-#>
-
-<#
 	.SYNOPSIS
 		You can customise the prompt (this function is run by PowerShell to display it).
 #>
@@ -145,7 +141,7 @@ Function Get-PackagesForMessaging()
 #>
 Function Update-PackagesForMessaging([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForMessaging
+	Get-PackagesForMessaging |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
@@ -169,7 +165,7 @@ Function Get-PackagesForDms()
 #>
 Function Update-PackagesForDms([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForDms
+	Get-PackagesForDms |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
@@ -193,7 +189,7 @@ Function Get-PackagesForProvisioning()
 #>
 Function Update-PackagesForProvisioning([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForProvisioning
+	Get-PackagesForProvisioning |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
@@ -217,7 +213,7 @@ Function Get-PackagesForIdentity()
 #>
 Function Update-PackagesForIdentity([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForIdentity
+	Get-PackagesForIdentity |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
@@ -241,7 +237,7 @@ Function Get-PackagesForSecurityTemplate()
 #>
 Function Update-PackagesForSecurityTemplate([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForSecurityTemplate
+	Get-PackagesForSecurityTemplate |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
@@ -268,7 +264,7 @@ Function Get-PackagesForPortal()
 #>
 Function Update-PackagesForPortal([string] $PackageSource = 'Aperture20', [switch] $Pre = $false, [switch] $IgnoreDependencies = $false)
 {
-	Get-PackagesForPortal
+	Get-PackagesForPortal |
 		Select -ExpandProperty Id -Unique |
 		ForEach {
 			Update-Package $_ -Source $PackageSource -Prerelease:$Pre -FileConflictAction Ignore -IgnoreDependencies:$IgnoreDependencies
