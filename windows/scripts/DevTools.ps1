@@ -2,13 +2,13 @@
     [switch] $DotNet,
     [switch] $CPP,
     [switch] $Jdk7,
-    [switch] $Jdk8
+    [switch] $Jdk8,
+    [switch] $Python2,
+    [switch] $Python3
 )
 
-##################
-# Type definitions
-
-
+# Constants
+$DevToolsDirectory = 'D:\Development\Tools'
 
 ##################
 # Helper functions
@@ -56,30 +56,28 @@ Function Get-32BitSoftwareRegistryValue([string] $RelativePath, [string] $Name)
     Return $value
 }
 
-Function Convert-PathStringToPathSet([string] $PathString) {
-    # Path order is important (but case is not).
-    # AF: Oh really? Then why are you using a SortedSet? They don't retain insertion order, you know. FIXME
-    $PathSet = New-Object 'System.Collections.Generic.SortedSet`1[[System.String,mscorlib]]' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+Function Convert-EnvironmentStringToPathList([string] $PathString) {
+    # Ensure that each path is emitted only once.
+    $PathSet = New-Object 'System.Collections.Generic.HashSet`1[[System.String,mscorlib]]' -ArgumentList ([System.StringComparer]::OrdinalIgnoreCase)
+    
+    # Resulting list should be mutable.
+    $OutputPaths = New-Object 'System.Collections.Generic.List`1[[System.String,mscorlib]]'
 
     If ($PathString) {
         ForEach ($path in $PathString.Split(';')) {
             $trimmedPath = $path.Trim()
-            If ($trimmedPath) {
-                $PathSet.Add($trimmedPath) | Out-Null
+            If ($trimmedPath -And $PathSet.Add($path)) {
+                $OutputPaths.Add($trimmedPath) | Out-Null
             }
         }
     }
 
-    Write-Output $PathSet -NoEnumerate # Don't try to be overly helpful and convert it to a fucking array.
+    Write-Output $OutputPaths -NoEnumerate # Don't try to be helpful and turn it into a sequence of pipeline objects
 }
 
-Function Convert-PathSetToPathString([System.Collections.Generic.SortedSet`1[[System.String,mscorlib]]] $PathSet) {
+Function Convert-PathsToEnvironmentString([string[]] $PathSet) {
     Return [string]::Join(";", $PathSet)
 }
-
-<#
-    TODO: Implement DotNet and CPP parameters
-#>
 
 If ($Jdk7) {
     $JdkVersion = '1.7.0_79'
@@ -103,7 +101,7 @@ If ($DotNet) {
 
 If ($CPP) {
     # CPP:Includes
-    $includes = Convert-PathStringToPathSet($env:INCLUDE)
+    $includes = Convert-EnvironmentStringToPathList($env:INCLUDE)
 
     $includes.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VC\INCLUDE')
@@ -127,10 +125,10 @@ If ($CPP) {
         (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.10240.0\winrt')
     ) | Out-Null
 
-    $env:INCLUDE = Convert-PathSetToPathString $includes
+    $env:INCLUDE = Convert-PathsToEnvironmentString $includes
 
     # CPP: Libraries
-    $libraries = Convert-PathStringToPathSet $env:LIB
+    $libraries = Convert-EnvironmentStringToPathList $env:LIB
 
     $libraries.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VC\LIB')
@@ -148,15 +146,11 @@ If ($CPP) {
         (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\lib\10.0.10240.0\um\x86')
     ) | Out-Null
 
-    $env:LIB = Convert-PathSetToPathString $libraries
+    $env:LIB = Convert-PathsToEnvironmentString $libraries
 }
 
-<#
-    TODO: This is clumsy - just build native PS lists and have a function that appends the list to a path string with sorted-set semantics (existing entries have priority).
-#>
-
 # Library Paths
-$libraryPaths = Convert-PathStringToPathSet $env:LIBPATH
+$libraryPaths = Convert-EnvironmentStringToPathList $env:LIBPATH
 
 If ($DotNet) {
     $libraryPaths.Add(
@@ -190,12 +184,15 @@ If ($CPP) {
     ) | Out-Null
 }
 
-$env:LIBPATH = Convert-PathSetToPathString $libraryPaths
+$env:LIBPATH = Convert-PathsToEnvironmentString $libraryPaths
 
 # Paths
-$paths = Convert-PathStringToPathSet $env:Path
+$paths = Convert-EnvironmentStringToPathList $env:Path
 
 If ($DotNet) {
+    $paths.Add(
+        (Join-Path ${env:UserProfile} '.dnx\bin')
+    ) | Out-Null
     $paths.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'HTML Help Workshop')
     ) | Out-Null
@@ -252,17 +249,36 @@ If ($JdkVersion) {
         (Join-Path $env:JDK_HOME 'bin')
     ) | Out-Null
     $paths.Add(
-        'C:\Development\Tools\ant\bin'
+        "$DevToolsDirectory\ant\bin"
     ) | Out-Null
     $paths.Add(
-        ('C:\Development\Tools\gradle\bin')
+        "$DevToolsDirectory\gradle\bin"
     ) | Out-Null
     $paths.Add(
-        ('C:\Development\Tools\activator')
+        "$DevToolsDirectory\activator"
+    ) | Out-Null
+    $paths.Add(
+        (Join-Path $env:USERPROFILE 'bin') # Local binaries (required for stuff that expects unix-style ~/bin)
+    ) | Out-Null
+}
+If ($Python2) {
+    $paths.Add(
+        "$DevToolsDirectory\Python\v27"
+    ) | Out-Null
+    $paths.Add(
+        "$DevToolsDirectory\Python\v27\Scripts"
+    ) | Out-Null
+}
+If ($Python3) {
+    $paths.Add(
+        "$DevToolsDirectory\Python\v35"
+    ) | Out-Null
+    $paths.Add(
+        "$DevToolsDirectory\Python\v35\Scripts"
     ) | Out-Null
 }
 
-$env:Path = Convert-PathSetToPathString $paths
+$env:Path = Convert-PathsToEnvironmentString $paths
 
 $env:PATHEXT = '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY'
 $env:UCRTVersion = '10.0.1 0240.0'
@@ -298,6 +314,12 @@ If ($Jdk7) {
 }
 If ($Jdk8) {
     $devComponents += 'JDK8'
+}
+If ($Python2) {
+    $devComponents += 'Python 2.x'
+}
+If ($Python3) {
+    $devComponents += 'Python 3.x'
 }
 
 $windowTitle = "Dev"
