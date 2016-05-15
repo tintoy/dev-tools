@@ -301,6 +301,12 @@ $env:WindowsSDKVersion = '10.0.10240.0\'
 $env:WindowsSDK_ExecutablePath_x64 = Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\'
 $env:WindowsSDK_ExecutablePath_x86 = Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\'
 
+# Helper functions
+If ($DotNet) {
+    $msbuildModulePath = Join-Path $PSScriptRoot 'DevTools-DotNet.psm1'
+    Import-Module $msbuildModulePath
+}
+
 # Set up the window / tab title
 $devComponents = @()
 If ($DotNet) {
