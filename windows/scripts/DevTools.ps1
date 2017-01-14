@@ -1,4 +1,4 @@
-﻿Param(
+Param(
     [switch] $DotNet,
     [switch] $CPP,
     [switch] $Jdk7,
@@ -110,19 +110,19 @@ If ($CPP) {
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE')
     ) | Out-Null
     $includes.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.10240.0\ucrt')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.14393.0\ucrt')
     ) | Out-Null
     $includes.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\NETFXSDK\4.6\include\um')
     ) | Out-Null
     $includes.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.10240.0\shared')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.14393.0\shared')
     ) | Out-Null
     $includes.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.10240.0\um')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.14393.0\um')
     ) | Out-Null
     $includes.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.10240.0\winrt')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\include\10.0.14393.0\winrt')
     ) | Out-Null
 
     $env:INCLUDE = Convert-PathsToEnvironmentString $includes
@@ -137,13 +137,13 @@ If ($CPP) {
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VC\ATLMFC\LIB')
     ) | Out-Null
     $libraries.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\lib\10.0.10240.0\ucrt\x86')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\lib\10.0.14393.0\ucrt\x86')
     ) | Out-Null
     $libraries.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\NETFXSDK\4.6\lib\um\x86')
     ) | Out-Null
     $libraries.Add(
-        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\lib\10.0.10240.0\um\x86')
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\lib\10.0.14393.0\um\x86')
     ) | Out-Null
 
     $env:LIB = Convert-PathsToEnvironmentString $libraries
@@ -206,6 +206,9 @@ If ($DotNet) {
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\TypeScript\1.5')
     ) | Out-Null
     $paths.Add(
+        (Join-Path ${env:windir} 'Microsoft.NET\Framework\v4.0.30319')
+    ) | Out-Null
+    $paths.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools')
     ) | Out-Null
     $paths.Add(
@@ -220,6 +223,9 @@ If ($DotNet) {
     $paths.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\Team Tools\Performance Tools')
     ) | Out-Null
+    $paths.Add(
+        (Join-Path ${env:ProgramFiles} 'CMake\bin')
+    ) | Out-Null
 }
 If ($CPP) {
     $paths.Add(
@@ -227,6 +233,9 @@ If ($CPP) {
     ) | Out-Null
     $paths.Add(
         (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VC\VCPackages')
+    ) | Out-Null
+    $paths.Add(
+        (Join-Path ${env:ProgramFiles(x86)} 'CMake\bin')
     ) | Out-Null
 }
 If ($DotNet -Or $CPP) {
@@ -296,8 +305,8 @@ $env:VS140COMNTOOLS = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studi
 $env:VSINSTALLDIR = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\'
 $env:VSSDK140Install = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio 14.0\VSSDK\'
 $env:WindowsSdkDir = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\'
-$env:WindowsSDKLibVersion = '10.0.10240.0\'
-$env:WindowsSDKVersion = '10.0.10240.0\'
+$env:WindowsSDKLibVersion = '10.0.14393.0\'
+$env:WindowsSDKVersion = '10.0.14393.0\'
 $env:WindowsSDK_ExecutablePath_x64 = Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\x64\'
 $env:WindowsSDK_ExecutablePath_x86 = Join-Path ${env:ProgramFiles(x86)} 'Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\'
 
